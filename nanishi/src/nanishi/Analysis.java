@@ -17,7 +17,7 @@ public class Analysis {
 
 	class Item {
 		private String strRegex;	// (高|髙)橋\s*直美
-		private String strName;		// (1)橋直美
+		private String strName;		// %1$s橋直美
 		private Pattern pattern;
 
 		public Item( String strRegex, String strName ) {
@@ -34,18 +34,30 @@ public class Analysis {
 			}
 			return true;
 		}
-		
+
 		public String match( String text ) {
+			D.dprint_method_start();
+			String strExch;
 			Matcher m = this.pattern.matcher(text);
 			if (m.find()) {
-				// this.strName
-				// 固定文字列の場合もあるが、
-				// (1)abc(2)のようなパターンもある
-				// (1),(2)は、正規表現のm.group(1),group(2)
-				
+				D.dprint(m.group(0));
+				int i = m.groupCount();
+				if (i == 0) {
+					strExch = this.strName;
+				} else if (i == 1) {
+					strExch = String.format(this.strName,
+							m.group(1));
+				} else if (i == 2) {
+					strExch = String.format(this.strName,
+							m.group(1), m.group(2));
+				} else {
+					strExch = this.strName;
+				}
 			} else {
-				return null;
+				strExch = null;
 			}
+			D.dprint_method_end();
+			return strExch;
 		}
 
 	}
@@ -81,7 +93,7 @@ public class Analysis {
 
 	/**
 	 *
-	 * @param intMap 
+	 * @param intMap
 	 */
 	public void createMap( Integer intMap ) {
 		List<Item>emptyList = new ArrayList<Item>();
@@ -100,7 +112,7 @@ public class Analysis {
 		mapAnal.put(intMap, itemList);
 		return true;
 	}
-	
+
 	public Map<Integer, String> getStringList( String text ) {
 		Map<Integer, String> map = new HashMap<>();
 		mapAnal.forEach((k, itemList) -> {
@@ -115,6 +127,8 @@ public class Analysis {
 			    // 合致したら、変換後の文字列を作成
 			    if (strMatch != null) {
 			    	map.put(k, strMatch);
+			    	break;
+			    	// 将来的には、startの位置が前のものを優先
 			    }
 			    // mapに追加する
 			}

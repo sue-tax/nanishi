@@ -3,12 +3,10 @@
  */
 package nanishi;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.text.PDFTextStripper;
 
 
 /**
@@ -31,15 +29,36 @@ public class Nanishi {
 		// 設定ファイルも？
 		// バッチファイルを作って、設定ファイルを切替える？
 
-		File file = new File("FoNEX.pdf");
+		FileProc fileProc = new FileProc("サンプルPDF.pdf");
+		String text = fileProc.getText();
+		System.out.println(text);
 
-        PDDocument document = PDDocument.load(file);
-        System.out.println("総ページ数：" + document.getNumberOfPages());
+		Analysis analysis = new Analysis();
+		analysis.createMap(2);
+		analysis.addMapElement(2,
+				"確定申告書", "01_確定申告書");
+		analysis.createMap(3);
+		analysis.addMapElement(3,
+				"(高|髙)橋(\\s*)直美", ",%1$橋%2d直美");
 
-        PDFTextStripper stripper = new PDFTextStripper();
-        stripper.setStartPage(1);
-        stripper.setEndPage(document.getNumberOfPages());
-        String result = stripper.getText(document);
-        System.out.println(result);
+
+		Map<Integer, String> map = analysis.getStringList(text);
+		String str2 = map.get(2);
+		System.out.println(str2);
+		String str3 = map.get(3);
+		System.out.println(str3);
+
+//		File file = new File("サンプルPDF.pdf");
+//
+//        PDDocument document = PDDocument.load(file);
+//        System.out.println("総ページ数：" + document.getNumberOfPages());
+//
+//        PDFTextStripper stripper = new PDFTextStripper();
+//        stripper.setStartPage(1);
+//        stripper.setEndPage(document.getNumberOfPages());
+//        String result = stripper.getText(document);
+//        System.out.println(result);
+
+
 	}
 }
