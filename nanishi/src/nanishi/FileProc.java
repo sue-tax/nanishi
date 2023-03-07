@@ -66,6 +66,7 @@ public class FileProc {
         D.dprint(strFile);
         File fNew = new File(strFile);
         boolean flag = fOld.renameTo(fNew);
+        // エラー処理
         D.dprint(flag);
 	}
 }

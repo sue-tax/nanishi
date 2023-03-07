@@ -35,6 +35,8 @@ public class Nanishi {
 		// バッチファイルを作って、設定ファイルを切替える？
 
 		Analysis analysis = new Analysis();
+		
+		String strFilePattern = "";
 
         Path path = Paths.get("config.csv");
         try {
@@ -65,6 +67,12 @@ public class Nanishi {
                 	} else {
                 		// エラー
                 	}
+                } else if (data[0].equals("0")) {
+                	if (data[1].equals("filename")) {
+                		D.dprint("filename");
+                		D.dprint(data[2]);
+                		strFilePattern = data[2];
+                	}
                 } else {
                 	// エラー
                 }
@@ -74,46 +82,26 @@ public class Nanishi {
         	D.dprint(e);
             System.out.println("ファイル読み込みに失敗");
         }
-
-
-
-//		String text2 = "abc　abc abc";
-//		System.out.println(text2);
-//		for (int i=0; i<text2.length(); i++) {
-//			int ch = text2.charAt(i);
-//			System.out.println(String.format("%x", ch));
-//		}
-//
-//		text2 = "佐藤　隆";
-//		System.out.println(text2);
-//		for (int i=0; i<text2.length(); i++) {
-//			int ch = text2.charAt(i);
-//			System.out.println(String.format("%x", ch));
-//		}
+        if (strFilePattern == "") {
+            System.out.println("ファイル指定なし");
+        	assert(false);
+        }
 
 		FileProc fileProc = new FileProc("サンプルPDF.pdf");
 		String text = fileProc.getText();
-//		System.out.println(text);
-//		for (int i=0; i<text.length(); i++) {
-//			int ch = text.charAt(i);
-//			System.out.println(String.format("%x", ch));
-//		}
-
 
 
 		Map<Integer, String> map = analysis.getStringList(
 				text);
-		String str2 = map.get(2);
-		System.out.println(str2);
-		String str3 = map.get(3);
-		System.out.println(str3);
 		String aStr[] = new String[10];
 		for (int i=1; i<10; i++) {
 			aStr[i] = map.get(i);
 		}
 
-		String strFileName = String.format("%2$s_%3$s",
-				aStr[1], aStr[2], aStr[3]);
+		String strFileName = String.format(strFilePattern,
+				aStr[1], aStr[2], aStr[3], aStr[4],
+				aStr[5], aStr[6], aStr[7], aStr[8],
+				aStr[9]);
 		D.dprint(strFileName);
 
 		fileProc.renameFile(strFileName);
