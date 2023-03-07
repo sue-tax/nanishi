@@ -2,9 +2,11 @@ package nanishi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,8 @@ public class Analysis {
 
 		public String match( String text ) {
 			D.dprint_method_start();
+			D.dprint(this.strRegex);
+			D.dprint(this.strName);
 			String strExch;
 			Matcher m = this.pattern.matcher(text);
 			if (m.find()) {
@@ -64,41 +68,24 @@ public class Analysis {
 
 	private Map<Integer, List<Item>> mapAnal;
 
+	private Set<Integer> setAnal;
+
 	public Analysis() {
-		mapAnal = new HashMap<>();
+		mapAnal = new HashMap<Integer, List<Item>>();
+		setAnal = new HashSet<Integer>();
 	}
 
-/**
-ファイル名, %2$s_%3$s_%1$yyyymmdd_%4$d_%5$d
-
-日時、書類名などは参考
-必要なのは、最初の番号のみ
-
-1,日時,,p mはファイルの作成日　pは処理日　　　　これには対応不要
-
-2,書類名,法人税申告書,1_法人税申告書
-
-2,書類名,納税額一覧表,9_納税額一覧表
-
-3,顧問先名,佐藤\s*太郎,佐藤太郎
-
-3,顧問先名,田中工業,田中工業
-
-3,顧問先名,(高|髙)橋\s*直美,(1)橋直美
-
-4,連番,,#   これには対応不要
-
-5,金額,(0-9,)*円,(1) 1は(0-9,)を示す、正規表現の処理で対応
- */
 
 	/**
 	 *
 	 * @param intMap
 	 */
-	public void createMap( Integer intMap ) {
-		List<Item>emptyList = new ArrayList<Item>();
-		mapAnal.put(intMap, emptyList);
-	}
+//	public void createMap( Integer intMap ) {
+//		if (! setAnal.contains(intMap)) {
+//			List<Item>emptyList = new ArrayList<Item>();
+//			mapAnal.put(intMap, emptyList);
+//		}
+//	}
 
 	public boolean addMapElement( Integer intMap,
 			String strRegex, String strName ) {
@@ -107,17 +94,26 @@ public class Analysis {
 		if( ! bSuccess ) {
 			return false;
 		}
-		List<Item>itemList = mapAnal.get(intMap);
-		itemList.add(item);
-		mapAnal.put(intMap, itemList);
+		if (! setAnal.contains(intMap)) {
+			List<Item>itemList = new ArrayList<Item>();
+			itemList.add(item);
+			mapAnal.put(intMap, itemList);
+			setAnal.add(intMap);
+		} else {
+			List<Item>itemList = mapAnal.get(intMap);
+			itemList.add(item);
+			mapAnal.put(intMap, itemList);
+		}
 		return true;
 	}
 
 	public Map<Integer, String> getStringList( String text ) {
+		D.dprint_method_start();
+		D.dprint(text);
 		Map<Integer, String> map = new HashMap<>();
 		mapAnal.forEach((k, itemList) -> {
-//		    System.out.println(k);
-//		    System.out.println(v);
+			D.dprint(k);
+			D.dprint(itemList);
 			Iterator<Item> iter = itemList.iterator();
 			while(iter.hasNext())
 			{
@@ -133,6 +129,7 @@ public class Analysis {
 			    // mapに追加する
 			}
 		});
+		D.dprint_method_end();
 		return map;
 	}
 
