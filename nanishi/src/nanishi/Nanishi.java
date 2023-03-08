@@ -34,11 +34,19 @@ public class Nanishi {
 		// 設定ファイルも？
 		// バッチファイルを作って、設定ファイルを切替える？
 
+		//java -jar C:\Users\xxxxx\AppData\Roaming\Microsoft\Windows\SendTo\nanishi.jar %1
+
+		String strFileConfig = args[0];
+		D.dprint(strFileConfig);
+		String strFileOriginal = args[1];
+		D.dprint(strFileOriginal);
+		// 将来的には複数ファイルを同時処理
+
 		Analysis analysis = new Analysis();
-		
+
 		String strFilePattern = "";
 
-        Path path = Paths.get("config.csv");
+        Path path = Paths.get(strFileConfig);
         try {
             // CSVファイルの読み込み
         	D.dprint(path);
@@ -49,15 +57,8 @@ public class Nanishi {
             D.dprint(lines);
             for (int i = 0; i < lines.size(); i++) {
                 String[] data = lines.get(i).split(",");
-                D.dprint(i);
-                D.dprint(data.length);
-                if (data.length > 3) {
-                    // 読み込んだCSVファイルの内容を出力
-                    System.out.print(data[0] + ",");
-                    System.out.print(data[1] + ",");
-                    System.out.print(data[2] + ",");
-                    System.out.println(data[3]);
-                }
+//                D.dprint(i);
+//                D.dprint(data.length);
                 if (data[0].matches("[1-9]")) {
                 	Integer index = Integer.valueOf(data[0]);
                 	D.dprint(index);
@@ -87,9 +88,8 @@ public class Nanishi {
         	assert(false);
         }
 
-		FileProc fileProc = new FileProc("サンプルPDF.pdf");
+		FileProc fileProc = new FileProc(strFileOriginal);
 		String text = fileProc.getText();
-
 
 		Map<Integer, String> map = analysis.getStringList(
 				text);
@@ -105,7 +105,6 @@ public class Nanishi {
 		D.dprint(strFileName);
 
 		fileProc.renameFile(strFileName);
-
 
 	}
 }

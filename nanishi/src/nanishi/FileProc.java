@@ -62,11 +62,13 @@ public class FileProc {
         String strName = fOld.getName();
         String strExt = strName.substring(
         		strName.lastIndexOf("."));
-        String strFile = strNewFile + strExt;
+        String strDir = fOld.getParent();
+        String strFile = strDir + "\\" + strNewFile + strExt;
+
         D.dprint(strFile);
         File fNew = new File(strFile);
         boolean flag = fOld.renameTo(fNew);
-        // エラー処理
+        // TODO エラーメッセージ
         D.dprint(flag);
 	}
 }
