@@ -3,7 +3,7 @@
 PDFファイルの内容に応じて、ファイル名を変更するプログラム
 【開発中】
 
-プロトタイプ版については、FileNameChanger nanishi.mを参照
+プロトタイプ版については、[FileNameChanger nanishi.md](https://github.com/sue-tax/nanishi/blob/master/FileNameChanger%20nanishi.md)を参照
 
 将来的には、PDFファイル以外も
 
