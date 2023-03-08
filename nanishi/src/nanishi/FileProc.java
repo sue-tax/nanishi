@@ -57,7 +57,7 @@ public class FileProc {
 		return this.strText;
 	}
 
-	public void renameFile( String strNewFile ) {
+	public boolean renameFile( String strNewFile ) {
         File fOld = new File(this.strFileName);
         String strName = fOld.getName();
         String strExt = strName.substring(
@@ -70,5 +70,6 @@ public class FileProc {
         boolean flag = fOld.renameTo(fNew);
         // TODO エラーメッセージ
         D.dprint(flag);
+        return flag;
 	}
 }

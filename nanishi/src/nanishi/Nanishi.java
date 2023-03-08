@@ -37,9 +37,9 @@ public class Nanishi {
 		//java -jar C:\Users\xxxxx\AppData\Roaming\Microsoft\Windows\SendTo\nanishi.jar %1
 
 		String strFileConfig = args[0];
-		D.dprint(strFileConfig);
+		System.out.println("設定ファイル:" + strFileConfig);
 		String strFileOriginal = args[1];
-		D.dprint(strFileOriginal);
+		System.out.println("処理ファイル:" + strFileOriginal);
 		// 将来的には複数ファイルを同時処理
 
 		Analysis analysis = new Analysis();
@@ -82,6 +82,7 @@ public class Nanishi {
         } catch (IOException e) {
         	D.dprint(e);
             System.out.println("ファイル読み込みに失敗");
+            assert(false);
         }
         if (strFilePattern == "") {
             System.out.println("ファイル指定なし");
@@ -102,9 +103,11 @@ public class Nanishi {
 				aStr[1], aStr[2], aStr[3], aStr[4],
 				aStr[5], aStr[6], aStr[7], aStr[8],
 				aStr[9]);
-		D.dprint(strFileName);
+		System.out.println("ファイル名:" + strFileName);
 
-		fileProc.renameFile(strFileName);
-
+		boolean flag = fileProc.renameFile(strFileName);
+		if (! flag) {
+			System.out.println("ファイル名変更に失敗しました");
+		}
 	}
 }
