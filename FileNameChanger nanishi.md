@@ -20,11 +20,11 @@ PDFファイル内の文字列に応じて、ファイル名を変更します�
 
 ### 必要なファイル
 
-[nanishi.jar](https://github.com/sue-tax/nanishi/tree/master/nanishi/nashisi.jar)
+[nanishi.jar](https://github.com/sue-tax/nanishi/blob/master/nanishi/nashisi.jar)
 
-[config.csv](https://github.com/sue-tax/nanishi/tree/master/nanishi/config.csv)
+[config.csv](https://github.com/sue-tax/nanishi/blob/master/nanishi/config.csv)
 
-[nanishi.bat](https://github.com/sue-tax/nanishi/tree/master/nanishi/nanishi.bat)
+[nanishi.bat](https://github.com/sue-tax/nanishi/blob/master/nanishi/nanishi.bat)
 
 ### インストール先のフォルダ
 
