@@ -38,13 +38,13 @@ public class Analysis {
 		}
 
 		public String match( String text ) {
-//			D.dprint_method_start();
-//			D.dprint(this.strRegex);
-//			D.dprint(this.strName);
+			D.dprint_method_start();
+			D.dprint(this.strRegex);
+			D.dprint(this.strName);
 			String strExch;
 			Matcher m = this.pattern.matcher(text);
 			if (m.find()) {
-//				D.dprint(m.group(0));
+				D.dprint(m.group(0));
 				int i = m.groupCount();
 				if (i == 0) {
 					strExch = this.strName;
@@ -60,7 +60,7 @@ public class Analysis {
 			} else {
 				strExch = null;
 			}
-//			D.dprint_method_end();
+			D.dprint_method_end();
 			return strExch;
 		}
 
@@ -89,9 +89,15 @@ public class Analysis {
 
 	public boolean addMapElement( Integer intMap,
 			String strRegex, String strName ) {
+		D.dprint_method_start();
+		D.dprint(intMap);
+		D.dprint(strRegex);
+		D.dprint(strName);
 		Item item = new Item(strRegex, strName);
 		boolean bSuccess = item.compile();
 		if( ! bSuccess ) {
+			D.dprint(false);
+			D.dprint_method_end();
 			return false;
 		}
 		if (! setAnal.contains(intMap)) {
@@ -104,6 +110,8 @@ public class Analysis {
 			itemList.add(item);
 			mapAnal.put(intMap, itemList);
 		}
+		D.dprint(true);
+		D.dprint_method_end();
 		return true;
 	}
 

@@ -72,4 +72,10 @@ public class FileProc {
         D.dprint(flag);
         return flag;
 	}
+
+	public String modifyFileName( String strOriginal ) {
+		String strModify = strOriginal.replaceAll(
+				"(\\|/|:|,|;|\\*|\\?|\"|,|>|\\|)", "_");
+		return strModify;
+	}
 }

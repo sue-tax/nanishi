@@ -63,8 +63,13 @@ public class Nanishi {
                 	Integer index = Integer.valueOf(data[0]);
                 	D.dprint(index);
                 	if (data.length >= 4) {
-                		analysis.addMapElement(index,
-                				data[2], data[3]);
+                		D.dprint("*"+data[2]+"*");
+                		if (! data[2].equals("")) {
+	                		analysis.addMapElement(index,
+	                				data[2], data[3]);
+                		} else {
+                			// 日時、連番、元ファイルの処理
+                		}
                 	} else {
                 		// エラー
                 	}
@@ -92,6 +97,10 @@ public class Nanishi {
 		FileProc fileProc = new FileProc(strFileOriginal);
 		String text = fileProc.getText();
 
+		System.out.println("PDFファイル内のテキスト");
+		System.out.println("==============================");
+		System.out.println(text);
+		System.out.println("==============================");
 		Map<Integer, String> map = analysis.getStringList(
 				text);
 		String aStr[] = new String[10];
@@ -103,6 +112,7 @@ public class Nanishi {
 				aStr[1], aStr[2], aStr[3], aStr[4],
 				aStr[5], aStr[6], aStr[7], aStr[8],
 				aStr[9]);
+		strFileName = fileProc.modifyFileName(strFileName);
 		System.out.println("ファイル名:" + strFileName);
 
 		boolean flag = fileProc.renameFile(strFileName);
