@@ -73,6 +73,8 @@ public class FileProc {
         return flag;
 	}
 
+	// copyFile
+
 	public String modifyFileName( String strOriginal ) {
 		String strModify = strOriginal.replaceAll(
 				"(\\|/|:|,|;|\\*|\\?|\"|,|>|\\|)", "_");

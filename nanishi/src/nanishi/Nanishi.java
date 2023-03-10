@@ -38,9 +38,6 @@ public class Nanishi {
 
 		String strFileConfig = args[0];
 		System.out.println("設定ファイル:" + strFileConfig);
-		String strFileOriginal = args[1];
-		System.out.println("処理ファイル:" + strFileOriginal);
-		// 将来的には複数ファイルを同時処理
 
 		Analysis analysis = new Analysis();
 
@@ -94,30 +91,38 @@ public class Nanishi {
         	assert(false);
         }
 
-		FileProc fileProc = new FileProc(strFileOriginal);
-		String text = fileProc.getText();
+        D.dprint(args);
+        D.dprint(args[1]);
+		String strFileOriginal;
+		for (int iFile=1; iFile<args.length; iFile++) {
+			strFileOriginal = args[iFile];
+			System.out.println("処理ファイル:" + strFileOriginal);
 
-		System.out.println("PDFファイル内のテキスト");
-		System.out.println("==============================");
-		System.out.println(text);
-		System.out.println("==============================");
-		Map<Integer, String> map = analysis.getStringList(
-				text);
-		String aStr[] = new String[10];
-		for (int i=1; i<10; i++) {
-			aStr[i] = map.get(i);
-		}
+			FileProc fileProc = new FileProc(strFileOriginal);
+			String text = fileProc.getText();
 
-		String strFileName = String.format(strFilePattern,
-				aStr[1], aStr[2], aStr[3], aStr[4],
-				aStr[5], aStr[6], aStr[7], aStr[8],
-				aStr[9]);
-		strFileName = fileProc.modifyFileName(strFileName);
-		System.out.println("ファイル名:" + strFileName);
+			System.out.println("PDFファイル内のテキスト");
+			System.out.println("==============================");
+			System.out.println(text);
+			System.out.println("==============================");
+			Map<Integer, String> map = analysis.getStringList(
+					text);
+			String aStr[] = new String[10];
+			for (int i=1; i<10; i++) {
+				aStr[i] = map.get(i);
+			}
 
-		boolean flag = fileProc.renameFile(strFileName);
-		if (! flag) {
-			System.out.println("ファイル名変更に失敗しました");
+			String strFileName = String.format(strFilePattern,
+					aStr[1], aStr[2], aStr[3], aStr[4],
+					aStr[5], aStr[6], aStr[7], aStr[8],
+					aStr[9]);
+			strFileName = fileProc.modifyFileName(strFileName);
+			System.out.println("ファイル名:" + strFileName);
+
+			boolean flag = fileProc.renameFile(strFileName);
+			if (! flag) {
+				System.out.println("ファイル名変更に失敗しました");
+			}
 		}
 	}
 }
