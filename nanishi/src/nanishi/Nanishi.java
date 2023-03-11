@@ -157,6 +157,7 @@ public class Nanishi {
 			        LocalDateTime nowDate
 			        		= LocalDateTime.now();
 			        D.dprint(nowDate);
+			        D.dprint(strDatetimeFormat);
 			        DateTimeFormatter dtf1 =
 			            DateTimeFormatter.ofPattern(strDatetimeFormat);
 			        aStr[indexDatetime] = dtf1.format(nowDate);
