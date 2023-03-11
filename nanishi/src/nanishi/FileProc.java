@@ -5,6 +5,9 @@ package nanishi;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -73,7 +76,24 @@ public class FileProc {
         return flag;
 	}
 
-	// copyFile
+	public boolean copyFile( String strCopyFile ) {
+        File fOld = new File(this.strFileName);
+        String strName = fOld.getName();
+        String strExt = strName.substring(
+        		strName.lastIndexOf("."));
+        String strDir = fOld.getParent();
+        String strFile = strDir + "\\" + strCopyFile + strExt;
+		Path pOld = Paths.get(this.strFileName);
+		Path pCopy = Paths.get(strFile);
+		boolean flag = true;
+		try{
+			Files.copy(pOld, pCopy);
+		}catch(IOException e){
+			flag = false;
+		}
+		D.dprint(flag);
+		return flag;
+	}
 
 	public String modifyFileName( String strOriginal ) {
 		String strModify = strOriginal.replaceAll(
