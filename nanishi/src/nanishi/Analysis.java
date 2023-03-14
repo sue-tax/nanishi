@@ -55,6 +55,10 @@ public class Analysis {
 				} else if (i == 2) {
 					strExch = String.format(this.strName,
 							m.group(1), m.group(2));
+				} else if (i == 3) {
+					strExch = String.format(this.strName,
+							m.group(1), m.group(2),
+							m.group(3));
 				} else {
 					strExch = this.strName;
 				}

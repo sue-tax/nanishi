@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -59,6 +61,40 @@ public class FileProc {
 	public String getText() {
 		return this.strText;
 	}
+
+	public String getExchFileName( Pattern patternMatch,
+			String strExchFormat ) {
+        File fOld = new File(this.strFileName);
+        String strName = fOld.getName();
+        String strFile = strName.substring(0,
+        		strName.lastIndexOf("."));
+        D.dprint(strFile);
+        String strExch;
+        Matcher m = patternMatch.matcher(strFile);
+        if (m.find()) {
+			D.dprint(m.group(0));
+			int i = m.groupCount();
+			if (i == 0) {
+				strExch = strExchFormat;
+			} else if (i == 1) {
+				strExch = String.format(strExchFormat,
+						m.group(1));
+			} else if (i == 2) {
+				strExch = String.format(strExchFormat,
+						m.group(1), m.group(2));
+			} else if (i == 3) {
+				strExch = String.format(strExchFormat,
+						m.group(1), m.group(2),
+						m.group(3));
+			} else {
+				strExch = strExchFormat;
+			}
+        } else {
+        	strExch = null;
+        }
+        return strExch;
+	}
+
 
 	public boolean renameFile( String strNewFile ) {
         File fOld = new File(this.strFileName);

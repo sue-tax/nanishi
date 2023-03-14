@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
@@ -34,6 +35,17 @@ public class Nanishi {
 	static int indexDatetime = 0;
 	static String strDatetime;
 	static String strDatetimeFormat;
+
+	static int indexFileName = 0;
+	static String strFileMatchPattern;
+	static Pattern patternFile;
+	static String strFileExchFormat;
+
+	static int indexDirName = 0;
+	static String strDirMatchPattern;
+	static String strDirExchFormat;
+
+	static int indexNumbering;
 
 
 	public static void main( String[] args ) throws InvalidPasswordException, IOException {
@@ -80,15 +92,47 @@ public class Nanishi {
                 	if (data.length >= 4) {
                 		D.dprint("*"+data[2]+"*");
                 		if (! data[2].equals("")) {
-	                		analysis.addMapElement(index,
-	                				data[2], data[3]);
+                			if (data[2].equals("+")) {
+                				// マッチパターンは
+                				// 変換文字列フォーマットと一致
+		                		analysis.addMapElement(index,
+		                				data[3], data[3]);
+                			} else if (data[2].equals("*")) {
+                				// マッチパターンは
+                				// 変換文字列フォーマットの
+                				// 各文字の間にスペース等を挿入
+                				StringBuilder stringBuilder = new StringBuilder();
+                				for (int j=0; j<data[3].length(); j++) {
+                					stringBuilder.append(data[3].charAt(j));
+                					stringBuilder.append("(\\s|　)*");
+                				}
+                				String strMatch = stringBuilder.toString();
+                				D.dprint(strMatch);
+		                		analysis.addMapElement(index,
+		                				strMatch, data[3]);
+                			} else {
+		                		analysis.addMapElement(index,
+		                				data[2], data[3]);
+                			}
                 		} else {
                 			// 日時、連番、元ファイルの処理
                 			if (data[3].matches("(m|c|a|p)")) {
                 				// ファイル更新日時等
                 				indexDatetime = index;
                 				strDatetime = data[3];
+                				patternFile = Pattern.compile(data[3]);
                 				strDatetimeFormat = data[4];
+                			} else if (data[3].equals("f")) {
+                				indexFileName = index;
+                				strFileMatchPattern = data[4];
+                				patternFile = Pattern.compile(data[4]);
+                				strFileExchFormat = data[5];
+                			} else if (data[3].equals("d")) {
+                				indexDirName = index;
+                				strDirMatchPattern = data[4];
+                				strDirExchFormat = data[5];
+                			} else if (data[3].equals("#")) {
+                				indexNumbering = index;
                 			}
                 		}
                 	} else {
@@ -146,7 +190,29 @@ public class Nanishi {
 					File file = new File(strFileOriginal);
 					BasicFileAttributes attrs
 							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+				    FileTime time = attrs.lastModifiedTime();
+				    D.dprint(time);
+				    SimpleDateFormat simpleDateFormat
+				    		= new SimpleDateFormat(strDatetimeFormat);
+				    aStr[indexDatetime]
+				    		= simpleDateFormat.format(
+				    				new Date(time.toMillis()));
+				} else if (strDatetime.equals("c")) {
+					File file = new File(strFileOriginal);
+					BasicFileAttributes attrs
+							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 				    FileTime time = attrs.creationTime();
+				    D.dprint(time);
+				    SimpleDateFormat simpleDateFormat
+				    		= new SimpleDateFormat(strDatetimeFormat);
+				    aStr[indexDatetime]
+				    		= simpleDateFormat.format(
+				    				new Date(time.toMillis()));
+				}  else if (strDatetime.equals("a")) {
+					File file = new File(strFileOriginal);
+					BasicFileAttributes attrs
+							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+				    FileTime time = attrs.lastAccessTime();
 				    D.dprint(time);
 				    SimpleDateFormat simpleDateFormat
 				    		= new SimpleDateFormat(strDatetimeFormat);
@@ -162,6 +228,11 @@ public class Nanishi {
 			            DateTimeFormatter.ofPattern(strDatetimeFormat);
 			        aStr[indexDatetime] = dtf1.format(nowDate);
 				}
+			}
+			if (indexFileName != 0) {
+				aStr[indexFileName] = fileProc
+						.getExchFileName(patternFile,
+						strFileExchFormat);
 			}
 
 			String strFileName = String.format(strFilePattern,
