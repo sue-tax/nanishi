@@ -123,10 +123,14 @@ public class Nanishi {
                 				patternFile = Pattern.compile(data[3]);
                 				strDatetimeFormat = data[4];
                 			} else if (data[3].equals("f")) {
+                				D.dprint("f");
+                				D.dprint(index);
                 				indexFileName = index;
                 				strFileMatchPattern = data[4];
+                				D.dprint(data[4]);
                 				patternFile = Pattern.compile(data[4]);
                 				strFileExchFormat = data[5];
+                				D.dprint(data[5]);
                 			} else if (data[3].equals("d")) {
                 				indexDirName = index;
                 				strDirMatchPattern = data[4];

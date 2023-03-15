@@ -64,6 +64,7 @@ public class FileProc {
 
 	public String getExchFileName( Pattern patternMatch,
 			String strExchFormat ) {
+		D.dprint_method_start();
         File fOld = new File(this.strFileName);
         String strName = fOld.getName();
         String strFile = strName.substring(0,
@@ -92,6 +93,8 @@ public class FileProc {
         } else {
         	strExch = null;
         }
+        D.dprint(strExch);
+        D.dprint_method_end();
         return strExch;
 	}
 
