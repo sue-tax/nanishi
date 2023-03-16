@@ -99,6 +99,42 @@ public class FileProc {
 	}
 
 
+	public String getExchDirName( Pattern patternMatch,
+			String strExchFormat ) {
+		D.dprint_method_start();
+        File fOld = new File(this.strFileName);
+        String strDir = fOld.getParent();
+        D.dprint(strDir);
+        String strExch;
+        Matcher m = patternMatch.matcher(strDir);
+        if (m.find()) {
+			D.dprint(m.group(0));
+			int i = m.groupCount();
+			if (i == 0) {
+				strExch = strExchFormat;
+			} else if (i == 1) {
+				strExch = String.format(strExchFormat,
+						m.group(1));
+			} else if (i == 2) {
+				strExch = String.format(strExchFormat,
+						m.group(1), m.group(2));
+			} else if (i == 3) {
+				strExch = String.format(strExchFormat,
+						m.group(1), m.group(2),
+						m.group(3));
+			} else {
+				strExch = strExchFormat;
+			}
+        } else {
+        	strExch = null;
+        }
+        D.dprint(strExch);
+        D.dprint_method_end();
+        return strExch;
+	}
+
+
+
 	public boolean renameFile( String strNewFile ) {
         File fOld = new File(this.strFileName);
         String strName = fOld.getName();

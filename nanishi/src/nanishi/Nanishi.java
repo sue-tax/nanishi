@@ -43,6 +43,7 @@ public class Nanishi {
 
 	static int indexDirName = 0;
 	static String strDirMatchPattern;
+	static Pattern patternDir;
 	static String strDirExchFormat;
 
 	static int indexNumbering;
@@ -134,6 +135,7 @@ public class Nanishi {
                 			} else if (data[3].equals("d")) {
                 				indexDirName = index;
                 				strDirMatchPattern = data[4];
+                				patternDir = Pattern.compile(data[4]);
                 				strDirExchFormat = data[5];
                 			} else if (data[3].equals("#")) {
                 				indexNumbering = index;
@@ -237,6 +239,14 @@ public class Nanishi {
 				aStr[indexFileName] = fileProc
 						.getExchFileName(patternFile,
 						strFileExchFormat);
+			}
+			if (indexDirName != 0) {
+				aStr[indexDirName] = fileProc
+						.getExchDirName(patternDir,
+						strDirExchFormat);
+			}
+			if (indexNumbering != 0) {
+				aStr[indexNumbering] = Integer.toString(iFile);
 			}
 
 			String strFileName = String.format(strFilePattern,
