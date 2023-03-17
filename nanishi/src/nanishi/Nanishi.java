@@ -3,21 +3,7 @@
  */
 package nanishi;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
@@ -28,25 +14,25 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
  */
 public class Nanishi {
 
-	static boolean flagRename = true;
+//	static boolean flagRename = true;
 
-	static Analysis analysis;
+//	static Analysis analysis;
 
-	static int indexDatetime = 0;
-	static String strDatetime;
-	static String strDatetimeFormat;
-
-	static int indexFileName = 0;
-	static String strFileMatchPattern;
-	static Pattern patternFile;
-	static String strFileExchFormat;
-
-	static int indexDirName = 0;
-	static String strDirMatchPattern;
-	static Pattern patternDir;
-	static String strDirExchFormat;
-
-	static int indexNumbering;
+//	static int indexDatetime = 0;
+//	static String strDatetime;
+//	static String strDatetimeFormat;
+//
+//	static int indexFileName = 0;
+//	static String strFileMatchPattern;
+//	static Pattern patternFile;
+//	static String strFileExchFormat;
+//
+//	static int indexDirName = 0;
+//	static String strDirMatchPattern;
+//	static Pattern patternDir;
+//	static String strDirExchFormat;
+//
+//	static int indexNumbering;
 
 
 	public static void main( String[] args ) throws InvalidPasswordException, IOException {
@@ -65,191 +51,47 @@ public class Nanishi {
 
 		//java -jar C:\Users\xxxxx\AppData\Roaming\Microsoft\Windows\SendTo\nanishi.jar %1
 
-
-
 		String strFileConfig = args[0];
 		System.out.println("設定ファイル:" + strFileConfig);
 
-		analysis = new Analysis();
-
-		String strFilePattern = "";
-
-        Path path = Paths.get(strFileConfig);
-        try {
-            // CSVファイルの読み込み
-        	D.dprint(path);
-//            List<String> lines = Files.readAllLines(
-//            		path, Charset.forName("Shift-JIS"));
-            List<String> lines = Files.readAllLines(
-            		path, Charset.forName("UTF-8"));
-            D.dprint(lines);
-            for (int i = 0; i < lines.size(); i++) {
-                String[] data = lines.get(i).split(",");
-//                D.dprint(i);
-//                D.dprint(data.length);
-                if (data[0].matches("[1-9]")) {
-                	Integer index = Integer.valueOf(data[0]);
-                	D.dprint(index);
-                	if (data.length >= 4) {
-                		D.dprint("*"+data[2]+"*");
-                		if (! data[2].equals("")) {
-                			if (data[2].equals("+")) {
-                				// マッチパターンは
-                				// 変換文字列フォーマットと一致
-		                		analysis.addMapElement(index,
-		                				data[3], data[3]);
-                			} else if (data[2].equals("*")) {
-                				// マッチパターンは
-                				// 変換文字列フォーマットの
-                				// 各文字の間にスペース等を挿入
-                				StringBuilder stringBuilder = new StringBuilder();
-                				for (int j=0; j<data[3].length(); j++) {
-                					stringBuilder.append(data[3].charAt(j));
-                					stringBuilder.append("(\\s|　)*");
-                				}
-                				String strMatch = stringBuilder.toString();
-                				D.dprint(strMatch);
-		                		analysis.addMapElement(index,
-		                				strMatch, data[3]);
-                			} else {
-		                		analysis.addMapElement(index,
-		                				data[2], data[3]);
-                			}
-                		} else {
-                			// 日時、連番、元ファイルの処理
-                			if (data[3].matches("(m|c|a|p)")) {
-                				// ファイル更新日時等
-                				indexDatetime = index;
-                				strDatetime = data[3];
-                				patternFile = Pattern.compile(data[3]);
-                				strDatetimeFormat = data[4];
-                			} else if (data[3].equals("f")) {
-                				D.dprint("f");
-                				D.dprint(index);
-                				indexFileName = index;
-                				strFileMatchPattern = data[4];
-                				D.dprint(data[4]);
-                				patternFile = Pattern.compile(data[4]);
-                				strFileExchFormat = data[5];
-                				D.dprint(data[5]);
-                			} else if (data[3].equals("d")) {
-                				indexDirName = index;
-                				strDirMatchPattern = data[4];
-                				patternDir = Pattern.compile(data[4]);
-                				strDirExchFormat = data[5];
-                			} else if (data[3].equals("#")) {
-                				indexNumbering = index;
-                			}
-                		}
-                	} else {
-                		// エラー
-                	}
-                } else if (data[0].equals("0")) {
-                	if (data[1].equals("filename")) {
-                		D.dprint("filename");
-                		D.dprint(data[2]);
-                		strFilePattern = data[2];
-                	} else if (data[1].equals("option")) {
-                		if (data[2].equals("rename")) {
-                			flagRename = true;
-	                	} else if (data[2].equals("copy")) {
-	                		flagRename = false;
-	                	}
-                	}
-                } else {
-                	// エラー
-                }
-
-            }
-        } catch (IOException e) {
-        	D.dprint(e);
-            System.out.println("ファイル読み込みに失敗");
-            assert(false);
-        }
-        if (strFilePattern == "") {
-            System.out.println("ファイル指定なし");
-        	assert(false);
-        }
+		Analysis analysis = new Analysis();
+		ConfigProc configProc = new ConfigProc(
+				strFileConfig, analysis);
+		String strRet = configProc.readConfig();
+		if (strRet != null) {
+			System.out.println(strRet);
+			return;
+		}
 
         D.dprint(args);
         D.dprint(args[1]);
-		String strFileOriginal;
+		String strFileFormat = configProc.getFileFormat();
+		boolean flagRename = configProc.getFlagRename();
 		for (int iFile=1; iFile<args.length; iFile++) {
-			strFileOriginal = args[iFile];
+			String strFileOriginal = args[iFile];
 			System.out.println("処理ファイル:" + strFileOriginal);
 
 			FileProc fileProc = new FileProc(strFileOriginal);
-			String text = fileProc.getText();
+			strRet = fileProc.readFile();
+			if (strRet != null) {
+				System.out.println(strRet);
+				continue;
+			}
+			String strText = fileProc.getText();
 
 			System.out.println("PDFファイル内のテキスト");
 			System.out.println("==============================");
-			System.out.println(text);
+			System.out.println(strText);
 			System.out.println("==============================");
-			Map<Integer, String> map = analysis.getStringList(
-					text);
-			String aStr[] = new String[10];
-			for (int i=1; i<10; i++) {
-				aStr[i] = map.get(i);
-			}
-			if (indexDatetime != 0) {
-				if (strDatetime.equals("m")) {
-					File file = new File(strFileOriginal);
-					BasicFileAttributes attrs
-							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				    FileTime time = attrs.lastModifiedTime();
-				    D.dprint(time);
-				    SimpleDateFormat simpleDateFormat
-				    		= new SimpleDateFormat(strDatetimeFormat);
-				    aStr[indexDatetime]
-				    		= simpleDateFormat.format(
-				    				new Date(time.toMillis()));
-				} else if (strDatetime.equals("c")) {
-					File file = new File(strFileOriginal);
-					BasicFileAttributes attrs
-							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				    FileTime time = attrs.creationTime();
-				    D.dprint(time);
-				    SimpleDateFormat simpleDateFormat
-				    		= new SimpleDateFormat(strDatetimeFormat);
-				    aStr[indexDatetime]
-				    		= simpleDateFormat.format(
-				    				new Date(time.toMillis()));
-				}  else if (strDatetime.equals("a")) {
-					File file = new File(strFileOriginal);
-					BasicFileAttributes attrs
-							= Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				    FileTime time = attrs.lastAccessTime();
-				    D.dprint(time);
-				    SimpleDateFormat simpleDateFormat
-				    		= new SimpleDateFormat(strDatetimeFormat);
-				    aStr[indexDatetime]
-				    		= simpleDateFormat.format(
-				    				new Date(time.toMillis()));
-				} else if (strDatetime.equals("p")){
-			        LocalDateTime nowDate
-			        		= LocalDateTime.now();
-			        D.dprint(nowDate);
-			        D.dprint(strDatetimeFormat);
-			        DateTimeFormatter dtf1 =
-			            DateTimeFormatter.ofPattern(strDatetimeFormat);
-			        aStr[indexDatetime] = dtf1.format(nowDate);
-				}
-			}
-			if (indexFileName != 0) {
-				aStr[indexFileName] = fileProc
-						.getExchFileName(patternFile,
-						strFileExchFormat);
-			}
-			if (indexDirName != 0) {
-				aStr[indexDirName] = fileProc
-						.getExchDirName(patternDir,
-						strDirExchFormat);
-			}
-			if (indexNumbering != 0) {
-				aStr[indexNumbering] = Integer.toString(iFile);
-			}
 
-			String strFileName = String.format(strFilePattern,
+			String aStr[] = configProc.getMatchString(
+					iFile, strText, fileProc);
+
+			if (aStr[0] != null) {
+				System.out.println(aStr[0]);
+				continue;
+			}
+			String strFileName = String.format(strFileFormat,
 					aStr[1], aStr[2], aStr[3], aStr[4],
 					aStr[5], aStr[6], aStr[7], aStr[8],
 					aStr[9]);

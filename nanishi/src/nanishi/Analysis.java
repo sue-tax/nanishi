@@ -64,7 +64,7 @@ public class Analysis {
 				}
 				start = m.start();
 			} else {
-				strExch = null;
+				strExch = "";
 			}
 			D.dprint(start);
 			D.dprint_method_end();

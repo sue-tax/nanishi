@@ -29,14 +29,46 @@ public class FileProc {
 	private String strText;
 
 
-	public FileProc( String strFileName ) throws InvalidPasswordException, IOException {
+	public FileProc( String strFileName ) {
 		this.strFileName = strFileName;
+	}
+
+	public String readFile() {
+		String strRet = null;
 		File file = new File(this.strFileName);
-        PDDocument document = PDDocument.load(file);
-        PDFTextStripper stripper = new PDFTextStripper();
+        PDDocument document;
+		try {
+			document = PDDocument.load(file);
+		} catch (InvalidPasswordException e) {
+			strRet = String.format(
+					"InvalidPassword_%s", this.strFileName);
+			return strRet;
+		} catch (IOException e) {
+			strRet = String.format(
+					"CantReadFile_%s_ファイルが読めません",
+					this.strFileName);
+			return strRet;
+		}
+        PDFTextStripper stripper;
+		try {
+			stripper = new PDFTextStripper();
+		} catch (IOException e) {
+			strRet = String.format(
+					"CantReadFile_%s_ファイルが読めません",
+					this.strFileName);
+			return strRet;
+		}
         stripper.setStartPage(1);
         stripper.setEndPage(document.getNumberOfPages());
-        String text = stripper.getText(document);
+        String text = "";
+		try {
+			text = stripper.getText(document);
+		} catch (IOException e) {
+			strRet = String.format(
+					"InvalidFile_%s_ファイルが正しくない",
+					this.strFileName);
+			return strRet;
+		}
 
         // 参考 https://www.informe.co.jp/useful/character/character27/
 //        もっとも一般的といえる半角（欧文）スペースは、ASCIIコードで20、ユニコードではU+0020という
@@ -55,12 +87,27 @@ public class FileProc {
         this.strText = text.replaceAll(
         		"(\\u2004|\\u2005|\\u2006|\\u2007)",
         		" ");
-        document.close();
+        try {
+			document.close();
+		} catch (IOException e) {
+			strRet = String.format(
+					"CantCloseFile_%s_"
+					+ "ファイルを閉じることができませんでした",
+					this.strFileName);
+			return strRet;
+		}
+        return strRet;
 	}
+
 
 	public String getText() {
 		return this.strText;
 	}
+
+	public String getFileName() {
+		return this.strFileName;
+	}
+
 
 	public String getExchFileName( Pattern patternMatch,
 			String strExchFormat ) {
@@ -91,7 +138,7 @@ public class FileProc {
 				strExch = strExchFormat;
 			}
         } else {
-        	strExch = null;
+        	strExch = "";
         }
         D.dprint(strExch);
         D.dprint_method_end();
@@ -126,7 +173,7 @@ public class FileProc {
 				strExch = strExchFormat;
 			}
         } else {
-        	strExch = null;
+        	strExch = "";
         }
         D.dprint(strExch);
         D.dprint_method_end();
@@ -145,8 +192,12 @@ public class FileProc {
 
         D.dprint(strFile);
         File fNew = new File(strFile);
-        boolean flag = fOld.renameTo(fNew);
-        // TODO エラーメッセージ
+        boolean flag = true;
+		try {
+			flag = fOld.renameTo(fNew);
+		} catch (Exception e) {
+			flag = false;
+		}
         D.dprint(flag);
         return flag;
 	}
@@ -169,6 +220,7 @@ public class FileProc {
 		D.dprint(flag);
 		return flag;
 	}
+
 
 	public String modifyFileName( String strOriginal ) {
 		String strModify = strOriginal.replaceAll(
