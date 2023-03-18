@@ -8,33 +8,17 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
 
+
+
 /**
  * @author sue-t
  *
  */
 public class Nanishi {
 
-//	static boolean flagRename = true;
+	static final float VERSION = 0.10f;
 
-//	static Analysis analysis;
-
-//	static int indexDatetime = 0;
-//	static String strDatetime;
-//	static String strDatetimeFormat;
-//
-//	static int indexFileName = 0;
-//	static String strFileMatchPattern;
-//	static Pattern patternFile;
-//	static String strFileExchFormat;
-//
-//	static int indexDirName = 0;
-//	static String strDirMatchPattern;
-//	static Pattern patternDir;
-//	static String strDirExchFormat;
-//
-//	static int indexNumbering;
-
-
+	
 	public static void main( String[] args ) throws InvalidPasswordException, IOException {
 
 		// http://dalmore.blog7.fc2.com/blog-entry-191.html
@@ -51,6 +35,9 @@ public class Nanishi {
 
 		//java -jar C:\Users\xxxxx\AppData\Roaming\Microsoft\Windows\SendTo\nanishi.jar %1
 
+		System.out.println(String.format("Nanishi version %.2f",
+				VERSION));
+		
 		String strFileConfig = args[0];
 		System.out.println("設定ファイル:" + strFileConfig);
 
@@ -60,6 +47,15 @@ public class Nanishi {
 		String strRet = configProc.readConfig();
 		if (strRet != null) {
 			System.out.println(strRet);
+			return;
+		}
+		Float configVersion = configProc.getVersion();
+		if (configVersion == 0.0f) {
+			System.out.println(String.format(
+					"設定ファイルのバージョン%.2fが低い",
+					configVersion));
+			System.out.println(
+					"設定ファイルの内容を確認してください");
 			return;
 		}
 

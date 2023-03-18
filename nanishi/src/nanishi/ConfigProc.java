@@ -46,6 +46,9 @@ public class ConfigProc {
 	static final String ERROR_TOOFEW_COLUMN
 			= "TooFewColumn_Line-%d_not_less_than_%d_"
 			+ "その行の項目数が少ない";
+
+	private float version = 0.0f;
+
 	/**
 	 * 設定ファイルのファイル名
 	 */
@@ -138,7 +141,14 @@ public class ConfigProc {
         			D.dprint_method_end();
         			return strRet;
             	}
-            	if (aData[1].equals(FILENAME_FORMAT)) {
+            	if (aData[1].equals(VERSION)) {
+            		strRet = readVersion(iLine, aData);
+            		if (strRet != null) {
+            			D.dprint(strRet);
+            			D.dprint_method_end();
+            			return strRet;
+            		}
+            	} else if (aData[1].equals(FILENAME_FORMAT)) {
             		strRet = readFormat(iLine, aData);
             		if (strRet != null) {
             			D.dprint(strRet);
@@ -255,9 +265,20 @@ public class ConfigProc {
 				return strRet;
 			}
 		}
-
 		D.dprint(strRet);
 		D.dprint_method_end();
+		return strRet;
+	}
+
+
+	private String readVersion( int iLine, String[] aData ) {
+		String strRet = null;
+		if (aData.length < 3) {
+			strRet = String.format(ERROR_TOOFEW_COLUMN,
+					iLine, 3);
+			return strRet;
+		}
+		this.version = Float.valueOf(aData[2]);
 		return strRet;
 	}
 
@@ -302,6 +323,10 @@ public class ConfigProc {
 
 	public boolean getFlagRename() {
 		return flagRename;
+	}
+
+	public float getVersion() {
+		return version;
 	}
 
 
