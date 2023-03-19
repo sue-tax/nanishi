@@ -83,7 +83,12 @@ public class Nanishi {
             List<String> lines = Files.readAllLines(
             		path, Charset.forName("UTF-8"));
             D.dprint(lines);
-            for (int i = 0; i < lines.size(); i++) {
+    		String firstLine = lines.get(0);
+    		// BOM対策
+    		if ((int)(firstLine.charAt(0)) == 0xfeff) {
+    			lines.set(0, firstLine.substring(1));
+    		}
+    		for (int i = 0; i < lines.size(); i++) {
                 String[] data = lines.get(i).split(",");
 //                D.dprint(i);
 //                D.dprint(data.length);
