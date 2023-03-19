@@ -34,6 +34,8 @@ import java.util.regex.Pattern;
  */
 public class ConfigProc {
 
+	static final String COMMENT = "Comment";
+
 	static final String VERSION = "Version";
 
 	static final String OPTION = "Option";
@@ -82,123 +84,14 @@ public class ConfigProc {
 	private Pattern patternDir;
 	private String strDirExchFormat;
 
-	private int indexNumbering;
+	private int indexNumbering = 0;
+	private int startNumbering;
 
 
 	public ConfigProc( String strFileConfig, Analysis analysis ) {
 		this.strFileConfig = strFileConfig;
 		this.analysis = analysis;
 	}
-
-//	public String readConfig() {
-//		D.dprint_method_start();
-//		String strRet = null;
-//		// https://uxmilk.jp/48018
-//		File f = new File(strFileConfig);
-//		FileReader fr;
-//		try {
-//			fr = new FileReader(f, StandardCharsets.UTF_8);
-//		} catch (Exception e) {
-//			strRet = String.format(
-//					"Cannot_open_file_%s_"
-//					+ "ファイルがオープンできません",
-//					strFileConfig);
-//			D.dprint(strRet);
-//			D.dprint_method_end();
-//			return strRet;
-//		}
-//		BufferedReader br = new BufferedReader(fr);
-//
-//		String line;
-//		List<String> lines = new ArrayList<String>();
-//		// 1行ずつCSVファイルを読み込む
-//		try {
-//			while ((line = br.readLine()) != null) {
-//				lines.add(line);
-//			}
-//			br.close();
-//		} catch (IOException e) {
-//			strRet = String.format(
-//					"Cannot_read_file_%s_"
-//					+ "ファイルが読めません",
-//					strFileConfig);
-//			D.dprint(strRet);
-//			D.dprint_method_end();
-//			return strRet;
-//		}
-//        D.dprint(lines);
-//        for (int iLine = 0; iLine < lines.size(); iLine++) {
-//        	D.dprint(lines.get(iLine));
-//            String[] aData = lines.get(iLine).split(",");
-//            D.dprint(aData[0]);
-//            if (aData[0].matches("[1-9]")) {
-//            	strRet = readMatch(iLine, aData);
-//        		if (strRet != null) {
-//        			D.dprint(strRet);
-//        			D.dprint_method_end();
-//        			return strRet;
-//        		}
-//            } else if (aData[0].equals("0")) {
-//            	if (aData.length < 2) {
-//        			strRet = String.format(ERROR_TOOFEW_COLUMN,
-//        					iLine+1, 2);
-//        			D.dprint(strRet);
-//        			D.dprint_method_end();
-//        			return strRet;
-//            	}
-//            	if (aData[1].equals(VERSION)) {
-//            		strRet = readVersion(iLine, aData);
-//            		if (strRet != null) {
-//            			D.dprint(strRet);
-//            			D.dprint_method_end();
-//            			return strRet;
-//            		}
-//            	} else if (aData[1].equals(FILENAME_FORMAT)) {
-//            		strRet = readFormat(iLine, aData);
-//            		if (strRet != null) {
-//            			D.dprint(strRet);
-//            			D.dprint_method_end();
-//            			return strRet;
-//            		}
-//            	} else if (aData[1].equals(OPTION)) {
-//            		strRet = readOption(iLine, aData);
-//            		if (strRet != null) {
-//            			D.dprint(strRet);
-//            			D.dprint_method_end();
-//            			return strRet;
-//            		}
-//            	} else {
-//            		strRet = String.format(
-//            				"Invalid_Line-%d_%s_"
-//            				+ "２列目が正しくない",
-//            				iLine+1, aData[1]);
-//        			D.dprint(strRet);
-//        			D.dprint_method_end();
-//        			return strRet;
-//            	}
-//            } else {
-//        		strRet = String.format(
-//        				"InvalidMatchNumber_Line-%d_%s_"
-//        				+ "１列目のマッチ番号が正しくない",
-//        				iLine+1, aData[0]);
-//        		continue;
-////    			D.dprint(strRet);
-////    			D.dprint_method_end();
-////    			return strRet;
-//            }
-//        }
-//        if (strFileFormat == null) {
-//    		strRet = String.format(
-//    				"NoFileFormat_"
-//    				+ "変更ファイル名フォーマットの指定がない");
-//			D.dprint(strRet);
-//			D.dprint_method_end();
-//			return strRet;
-//        }
-//        D.dprint(strRet);
-//        D.dprint_method_end();
-//        return strRet;
-//	}
 
 	public String readConfig() {
 		D.dprint_method_start();
@@ -216,13 +109,12 @@ public class ConfigProc {
 			return strRet;
 		}
     	D.dprint(path);
-        // CSVファイルの読み込み
-        List<String> lines;
+
+    	List<String> lines;
 		try {
 //			lines = Files.readAllLines(
 //					path, Charset.forName("UTF-8"));
 			lines = Files.readAllLines(path);
-//					path, Charset.forName("UTF-8"));
 		} catch (IOException e1) {
 			strRet = String.format(
 					"CannotReadFile_Files.readAllLines_%s"
@@ -234,9 +126,6 @@ public class ConfigProc {
 		}
 //        D.dprint(lines);
 
-//		public static final ByteOrderMark UTF_8
-//		= new ByteOrderMark("UTF-8", 0xEF, 0xBB, 0xBF);
-
 		String firstLine = lines.get(0);
 //        D.dprint(String.format("%02x", (int)(firstLine.charAt(0))));
 //        D.dprint(String.format("%02x", (int)(firstLine.charAt(1))));
@@ -245,11 +134,6 @@ public class ConfigProc {
         if ((int)(firstLine.charAt(0)) == 0xfeff) {
 			lines.set(0, firstLine.substring(1));
 		}
-//		if ((firstLine.charAt(0) == 0xEF)
-//				&& (firstLine.charAt(1) == 0xBB)
-//				&& (firstLine.charAt(2) == 0xBF)) {
-//			lines.set(0, firstLine.substring(3));
-//		}
 //        D.dprint(lines);
 
 		for (int iLine = 0; iLine < lines.size(); iLine++) {
@@ -301,15 +185,17 @@ public class ConfigProc {
         			D.dprint_method_end();
         			return strRet;
             	}
+            } else if (aData[0].equals(COMMENT)) {
+            	// コメント行
             } else {
         		strRet = String.format(
         				"InvalidMatchNumber_Line-%d_%s_"
         				+ "１列目のマッチ番号が正しくない",
         				iLine+1, aData[0]);
-        		continue;
-//    			D.dprint(strRet);
-//    			D.dprint_method_end();
-//    			return strRet;
+//        		continue;
+    			D.dprint(strRet);
+    			D.dprint_method_end();
+    			return strRet;
             }
         }
         if (strFileFormat == null) {
@@ -384,6 +270,22 @@ public class ConfigProc {
 				strDirExchFormat = aData[5];
 			} else if (aData[2].equals("#")) {
 				indexNumbering = index;
+				if (aData.length >= 5) {
+					try {
+						startNumbering = Integer.valueOf(
+								aData[4]);
+					} catch (NumberFormatException e) {
+			    		strRet = String.format(
+			    				"InvalidStartNumber_Line-%d_%s_"
+			    				+ "開始番号が正しくない",
+			    				iLine+1, aData[4]);
+			    		D.dprint(strRet);
+			    		D.dprint_method_end();
+						return strRet;
+					}
+				} else {
+					startNumbering = 1;
+				}
 			} else {
 	    		strRet = String.format(
 	    				"InvalidMatch_Line-%d_%s_"
@@ -404,10 +306,18 @@ public class ConfigProc {
 		String strRet = null;
 		if (aData.length < 3) {
 			strRet = String.format(ERROR_TOOFEW_COLUMN,
-					iLine, 3);
+					iLine+1, 3);
 			return strRet;
 		}
-		this.version = Float.valueOf(aData[2]);
+		try {
+			this.version = Float.valueOf(aData[2]);
+		} catch (NumberFormatException e) {
+			strRet = String.format(
+					"InvalidVersion_FloatNumber_Line-%d_"
+					+ "バージョンが小数でない",
+					iLine+1);
+			return strRet;
+		}
 		return strRet;
 	}
 
